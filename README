@@ -1,0 +1,10 @@
+An example of regularized Poisson regression (AKA log-linear regression, AKA
+multiplicative balanced minimum bias, AKA a GLM with Poisson errors and a log
+link) in Java.  Poisson regression is probably more useful than you think, see
+http://scalpelcannon.blogspot.com/2012/07/poisson-regression-is-more-useful-than.html
+
+Depends on the wonderful Mallet optimization routines, and happens to use the
+Apache Commons Math linear algebra packages.  It's easily adaptable to use any
+other vector representation, or raw arrays.  Also somewhat easily adaptable to
+use other optimization routines that only depend on loglikelihood and gradients
+(not Hessians, unless you want to look up the formula).
