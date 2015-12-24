@@ -1,6 +1,7 @@
 package com.nyeggen.poisson;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.BlockRealMatrix;
@@ -46,12 +47,12 @@ public class PoissonRegression {
 	
 	/**Returns a fittable model instance with a "frozen" snapshot of the current
 	 * dataset.*/
-	public LikelihoodOptimizer makeModel() {
-		return new LikelihoodOptimizer();
+	public FittableModel makeModel() {
+		return new FittableModel();
 	}
 	
 	/**Actual, fittable model with a frozen snapshot of the data.*/
-	public class LikelihoodOptimizer 
+	public class FittableModel 
 	implements Optimizable.ByGradientValue, Optimizable.ByGradient{
 		
 		private final RealMatrix xMatrix;
@@ -63,7 +64,7 @@ public class PoissonRegression {
 		private boolean isFitted;
 		private final Optimizer opt;
 		
-		public LikelihoodOptimizer(){			
+		public FittableModel(){			
 			betas = new ArrayRealVector(columns);
 			xMatrix = new BlockRealMatrix(rows, columns);
 			yVector = new ArrayRealVector(outcomes.toArray(new Double[outcomes.size()]));
@@ -149,5 +150,24 @@ public class PoissonRegression {
 			for(int i=0;i<buffer.length;i++) buffer[i] = accum.getEntry(i);
 		}
 	}
-
+	
+	//Example of usage
+	public static void main(String[] args){
+		final Random rng = new Random();
+		final int nVariables = 5;
+		final double regularization = 0.0;
+		final PoissonRegression reg = new PoissonRegression();
+		for(int i=0; i<1000; i++){
+			final double outcome = rng.nextDouble();
+			final double[] variables = new double[nVariables];
+			for(int j=0; j<nVariables; j++) variables[j] = rng.nextDouble();
+			reg.addEntry(outcome, new ArrayRealVector(variables));
+		}
+		final FittableModel model = reg.makeModel();
+		model.fit(regularization);
+		
+		final double[] variables = new double[nVariables];
+		for(int j=0; j<nVariables; j++) variables[j] = rng.nextDouble();
+		model.predict(new ArrayRealVector(variables));
+	}
 }
